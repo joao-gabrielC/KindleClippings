@@ -3,8 +3,6 @@ import re
 import io
 import os
 import argparse
-from fpdf import FPDF
-import docx
 
 def remove_chars(s, end_directory=""):
     """
@@ -27,65 +25,6 @@ def remove_chars(s, end_directory=""):
     max_length = 245 - len(end_directory)  # max file size limited to 255.
     s = s[:max_length]
     return s
-
-
-def insert_line_break_in_pdf(pdf_file: FPDF, num_breaks: int = 1) -> FPDF:
-    """
-    Inserts a line break in a pdf for num_breaks times
-    """
-    while num_breaks != 0:
-        pdf_file.multi_cell(0, 5, "", 0)
-        num_breaks -= 1
-
-    return pdf_file
-
-def insert_bar_separator_in_pdf(pdf_file: FPDF):
-    """
-    Inserts a bar separator in a pdf, useful to separate highlights
-    """
-    pdf_file = insert_line_break_in_pdf(pdf_file)
-    pdf_file.set_draw_color(191, 191, 191)
-    pdf_file.line(40, pdf_file.y, 150, pdf_file.y)
-    pdf_file = insert_line_break_in_pdf(pdf_file)
-
-    return pdf_file
-
-
-def prepare_pdf_document(highlights: str, include_clip_meta = False, title: str = "Your Notes And Highlights") -> FPDF:
-    """
-    Will create pdf document from the notes
-
-    :param highlights:
-    :return: FPDF
-    """
-    pdf_file = FPDF()
-    pdf_file.add_page()
-    pdf_file.add_font("lisboa", '', 'media/Lisboa.ttf', uni=True)
-    pdf_file.set_font("lisboa", '', 22)
-    pdf_file.set_margins(25, 40, 25)
-    pdf_file = insert_line_break_in_pdf(pdf_file, 3)
-    pdf_file.multi_cell(0, 5, title, align="C")
-    pdf_file = insert_line_break_in_pdf(pdf_file, 2)
-    
-    meta_regex_pattern = r"(Your.*\| Added on)"
-    for highlight_line in highlights:
-        # create muti-cell pdf object and add text to it
-        if re.search(meta_regex_pattern, highlight_line):
-            pdf_file.set_font("lisboa", '', 11)
-            pdf_file.set_text_color(77, 77, 77)
-            pdf_file.multi_cell(0, 5, highlight_line, 0)
-            pdf_file = insert_bar_separator_in_pdf(pdf_file)
-        elif len(highlight_line) < 10:
-            if not include_clip_meta and highlight_line == "...":
-                pdf_file = insert_bar_separator_in_pdf(pdf_file)
-            else:
-                continue
-        else:
-            pdf_file.set_font("lisboa", '', 15)
-            pdf_file.set_text_color(0, 0, 0)
-            pdf_file.multi_cell(0, 5, highlight_line, 0)
-
-    return pdf_file
 
 
 def convert_to_format(path, file_name, format, include_clip_meta=False):
@@ -138,7 +77,7 @@ def create_file_by_type(end_directory, format, include_clip_meta=False):
     return output_files
 
 
-def parse_clippings(source_file, end_directory, encoding="utf-8", format="txt", include_clip_meta=False):
+def parse_clippings(source_file, end_directory, encoding="utf-8", include_clip_meta=False):
     """
     Each clipping always consists of 5 lines:
     - title line
@@ -205,13 +144,6 @@ def parse_clippings(source_file, end_directory, encoding="utf-8", format="txt", 
                         outfile.write(clip_meta + "\n")
                     outfile.write("\n...\n\n")
 
-    # create additional file based on format
-    if format in ["pdf","docx"]:
-        formatted_out_files = create_file_by_type(end_directory, format, include_clip_meta)
-        output_files.update(formatted_out_files)
-    else:
-        print("Invalid format mentioned. Only txt file will be created")
-        args.format = "txt"
 
     print("\nExported titles:\n")
     for i in output_files:
@@ -225,7 +157,6 @@ if __name__ == "__main__":
     parser.add_argument("-source", type=str, default="/Volumes/Kindle")
     parser.add_argument("-destination", type=str, default="./")
     parser.add_argument("-encoding", type=str, default="utf8")
-    parser.add_argument("-format", type=str, default="txt")
     parser.add_argument("-include_clip_meta", type=bool, default=False)
     args = parser.parse_args()
 
@@ -241,4 +172,4 @@ if __name__ == "__main__":
     else:
         destination = args.destination + "/KindleClippings/"
 
-    parse_clippings(source_file, destination, args.encoding, args.format, args.include_clip_meta)
+    parse_clippings(source_file, destination, args.encoding, args.include_clip_meta)
