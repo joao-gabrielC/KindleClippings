@@ -26,7 +26,7 @@ def remove_chars(s, end_directory=""):
     return s
 
 
-def convert_to_format(path, file_name, format, include_clip_meta=False):
+def convert_to_format(path, file_name, format, include_clip_meta=True):
     """
     Will get text file and will convert to specified output
 
@@ -55,7 +55,7 @@ def convert_to_format(path, file_name, format, include_clip_meta=False):
     return output_file_name
 
 
-def create_file_by_type(end_directory, format, include_clip_meta=False):
+def create_file_by_type(end_directory, format, include_clip_meta=True):
     """
     Will iterate over all text files and will convert and create file with specified format
     Currently Only pdf and docx are supported
@@ -76,7 +76,7 @@ def create_file_by_type(end_directory, format, include_clip_meta=False):
     return output_files
 
 
-def parse_clippings(source_file, end_directory, encoding="utf-8", include_clip_meta=False):
+def parse_clippings(source_file, end_directory, encoding="utf-8", include_clip_meta=True):
     """
     Each clipping always consists of 5 lines:
     - title line
@@ -118,7 +118,7 @@ def parse_clippings(source_file, end_directory, encoding="utf-8", include_clip_m
                 title = title[1:]
 
             # Remove characters and create path
-            outfile_name = remove_chars(title, end_directory) + ".md"
+            outfile_name = f"{remove_chars(title, end_directory)}-citacoes.md"
             path = end_directory + "/" + outfile_name
 
             # If we haven't seen title yet, set mode to write. Else, set to append.
@@ -142,8 +142,8 @@ def parse_clippings(source_file, end_directory, encoding="utf-8", include_clip_m
                 if clipping_text not in current_text:
                     outfile.write(clipping_text + "\n")
                     if include_clip_meta:
-                        outfile.write(clip_meta + "\n")
-                    outfile.write("\n...\n\n")
+                        outfile.write(f"*{clip_meta}*\n")
+                    outfile.write("\n---\n\n")
 
 
     print("\nExported titles:\n")
