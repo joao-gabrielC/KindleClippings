@@ -119,12 +119,14 @@ def parse_clippings(source_file, end_directory, encoding="utf-8", include_clip_m
                 title = title[1:]
 
             # Remove characters and create path
-            outfile_name = remove_chars(title, end_directory) + ".txt"
+            outfile_name = remove_chars(title, end_directory) + ".md"
             path = end_directory + "/" + outfile_name
 
             # If we haven't seen title yet, set mode to write. Else, set to append.
             if outfile_name not in (list(output_files) + os.listdir(end_directory)):
-                mode = "w"
+                with open(path, "w") as f:
+                    f.write(f"## {outfile_name}\n\n")
+                mode = "a"
                 output_files.add(outfile_name)
                 current_text = ""
             else:
