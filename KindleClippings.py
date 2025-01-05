@@ -158,7 +158,7 @@ if __name__ == "__main__":
     parser.add_argument("-source", type=str, default="/Volumes/Kindle")
     parser.add_argument("-destination", type=str, default="./")
     parser.add_argument("-encoding", type=str, default="utf8")
-    parser.add_argument("-include_clip_meta", type=bool, default=False)
+    parser.add_argument("-include_clip_meta", type=bool, default=True)
     args = parser.parse_args()
 
     if args.source[-4:] == ".txt":
