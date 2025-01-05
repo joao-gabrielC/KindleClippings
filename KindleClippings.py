@@ -1,6 +1,5 @@
 from __future__ import print_function
 import re
-import io
 import os
 import argparse
 
@@ -105,7 +104,7 @@ def parse_clippings(source_file, end_directory, encoding="utf-8", include_clip_m
     title = ""
 
     # Open clippings textfile and read data in lines
-    with io.open(source_file, "r", encoding=encoding, errors="ignore") as f:
+    with open(source_file, "r", encoding=encoding, errors="ignore") as f:
         # Individual highlights within clippings are separated by ==========
         for highlight in f.read().split("=========="):
             # For each highlight, we split it into the lines
@@ -132,13 +131,13 @@ def parse_clippings(source_file, end_directory, encoding="utf-8", include_clip_m
             else:
                 # If the title exists, read it as text so that we won't append duplicates
                 mode = "a"
-                with io.open(path, "r", encoding=encoding, errors="ignore") as textfile:
+                with open(path, "r", encoding=encoding, errors="ignore") as textfile:
                     current_text = textfile.read()
 
             clipping_text = lines[3]
             clip_meta = lines[1]
 
-            with io.open(path, mode, encoding=encoding, errors="ignore") as outfile:
+            with open(path, mode, encoding=encoding, errors="ignore") as outfile:
                 # Write out the the clippings text if it's not already there
                 if clipping_text not in current_text:
                     outfile.write(clipping_text + "\n")
